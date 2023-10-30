@@ -1,0 +1,57 @@
+#--| $XDG_CONFIG_HOME/mako/config |--#
+
+#--| global options |--#
+history=1
+max-history=50
+sort=+time
+
+#--| keys & mouse |--#
+on-button-left=dismiss
+on-button-right=dismiss-all
+
+#--| style |--#
+actions=1
+anchor=top-right
+border-radius=6
+border-size=1
+default-timeout=4000
+font=JetBrains Mono 10, Symbols Nerd Font 10
+group-by=none
+height=100
+icon-path=$XDG_CACHE_HOME/ncmpcpp/previews:$HOME/.config/mako/icons/
+icons=1
+ignore-timeout=0
+layer=overlay
+margin=10,8,8
+markup=1
+max-icon-size=64
+max-visible=5
+padding=8
+width=350
+
+#--| colors |--#
+background-color=#1d2021
+text-color=#ebdbb2
+border-color=#458588
+
+#--| rules |--#
+[urgency=low]
+border-color=#b8bb26
+
+[urgency=high]
+default-timeout=0
+border-color=#cc241d
+
+[app-name=Spotify]
+default-timeout=2000
+group-by=category
+
+[category=volume]
+default-timeout=700
+
+[category=brightness]
+default-timeout=700
+
+[category=mpd]
+default-timeout=2000
+group-by=category

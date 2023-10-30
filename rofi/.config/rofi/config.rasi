@@ -1,0 +1,34 @@
+@theme "gruvbox-dark"
+
+configuration{
+    modi: "run,drun,ssh";
+    icon-theme: "Gruvbox_Dark";
+    show-icons: false;
+    terminal: "wezterm";
+    drun-display-format: "{icon} {name}";
+    location: 0;
+    disable-history: false;
+    hide-scrollbar: true;
+    display-drun: "  Apps ";
+    display-run: "  Run ";
+    display-window: " 﩯 Window";
+    display-ssh: "  SSH";
+    display-Network: " 󰤨 Network";
+    display-emoji: " 󰞅 Emoji";
+    sidebar-mode: true;
+
+    kb-row-tab: "";
+    kb-remove-to-eol: "";
+    kb-remove-char-back: "BackSpace";
+    kb-accept-entry: "Return";
+    kb-mode-complete: "";
+    kb-element-prev: "";
+    kb-element-next: "";
+    kb-mode-previous: "ISO_Left_Tab";
+    kb-mode-next: "Tab";
+    kb-row-left: "Control+h";
+    kb-row-right: "Control+l";
+    kb-row-down: "Control+j,Down";
+    kb-row-up: "Control+k,Up";
+    kb-remove-word-back: "Control+BackSpace";
+}

@@ -1,0 +1,11 @@
+#!/bin/sh
+swaymsg output "*" bg "$(find ~/pictures/wallpaper -type f | shuf -n1)" fill &
+OLD_PID=$!
+while true; do
+    sleep 300
+    swaymsg output "*" bg "$(find ~/pictures/wallpaper -type f | shuf -n1)" fill &
+    NEXT_PID=$!
+    sleep 5
+    kill $OLD_PID
+    OLD_PID=$NEXT_PID
+done

@@ -1,0 +1,18 @@
+profile left-full-hd {
+    output eDP-1 mode 1366x768 position 1920,0
+    output "Unknown HP E243m 3CQ828110F" mode 1920x1080 position 0,0
+    exec swaymsg workspace 1:web   , move workspace to HDMI-A-1
+    exec swaymsg workspace 2:term  , move workspace to HDMI-A-1
+    exec swaymsg workspace 3:code  , move workspace to HDMI-A-1
+    exec swaymsg workspace 4:notes , move workspace to HDMI-A-1
+    exec swaymsg workspace 5:mail  , move workspace to eDP-1
+    exec swaymsg workspace 6:news  , move workspace to eDP-1
+    exec swaymsg workspace 7:music , move workspace to eDP-1
+    exec swaymsg workspace 8:music , move workspace to eDP-1
+    exec swaymsg workspace 9:vm    , move workspace to eDP-1
+    exec swaymsg workspace 10:any  , move workspace to eDP-1
+}
+
+profile laptop-only {
+    output eDP-1 mode 1366x768 position 0,0
+}

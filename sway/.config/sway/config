@@ -1,0 +1,23 @@
+# vim: ft=swayconfig
+
+#--| include configs |--#
+  include $XDG_CONFIG_HOME/sway/config.d/*
+
+#--| terminal emulator |--#
+  set $term wezterm start
+  set $term_tmux wezterm start --cwd $HOME
+
+#--| launcher |--#
+  set $menu rofi -show drun
+
+#--| idle |--#
+  exec swayidle -w \
+      timeout 300   'mpc -q stop ; sudo light -S 15 ; echo 1 > /sys/class/leds/tpacpi::kbd_backlight/brightness ; swaylock -f' \
+      timeout 600   'swaymsg "output * dpms off" \
+      resume        'swaymsg "output * dpms on" ; sudo light -S 55' \
+      before-sleep  'swaylock -f'
+
+#--| clamshell mode |--#
+  set $laptop eDP-1
+  bindswitch --reload --locked lid:on  exec swaylock -f ; mpc -p stop ; echo 1 > /sys/class/leds/tpacpi::kbd_backlight/brightness ; swaymsg output $laptop disable
+  bindswitch --reload --locked lid:off exec swaymsg output $laptop enable ; sudo light -S 55 ; wlsunset -l 51.6 -L 6.6 -g 0.8

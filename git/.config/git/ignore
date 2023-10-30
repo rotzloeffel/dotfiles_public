@@ -1,0 +1,132 @@
+# Node
+npm-debug.log
+node_modules
+.npm/
+
+# Mac
+.DS_Store
+._*
+.Spotlight-V100
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# IDE
+.vscode
+.idea
+.iml
+*.sublime-workspace
+.venv
+tags
+target
+build
+dist
+
+# Temporary
+*~
+*.bak
+*.swp
+*.swo
+.cache/
+*[Cc]ache/
+.git/
+*.uuid
+
+# General
+**/backup/*
+log/*
+*.log
+.bash_history
+
+# Apps
+.mozilla
+watch_later/
+**/.config/ncmpcpp/error.log
+**/.config/ncmpcpp/lyrics
+**/.config/newsboat/cache.db
+**/.config/newsboat/cache.db.lock
+mail/*
+*.retry
+.vagrant
+.electron/
+.vpython-root/
+.gradle/
+.nuget/
+.cargo/
+.evernote/
+.zoom/
+.azure-functions-core-tools/
+.config/BraveSoftware/
+yay/
+.local/share/Trash/
+**/vifminfo.json
+
+# Compiled
+luac.out
+*.com
+*.class
+*.dll
+*.exe
+*.out
+*.hex
+*.x86_64
+*.i*86
+*.app
+*.o
+*.pyc
+*.pyo
+*.os
+*.ko
+*.obj
+*.elf
+
+# Packages
+*.7z
+*.dmg
+*.iso
+*.jar
+*.rar
+*.zip
+*.msi
+*.tar.gz
+*.tar
+
+# Databases
+*.sql
+*.sqlite
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+*.def
+*.exp
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Neovim
+plugin/packer_compiled.lua
+.local/share/nvim/swap/
+.local/share/nvim/undo/
+.vim
+.viminfo
+
+# ZSH
+.zsh_plugins.zsh
+.antidote
+.zcompdump
+
+# TMUX
+**/tmux/plugins/*
+**/tmux/resurrect/*

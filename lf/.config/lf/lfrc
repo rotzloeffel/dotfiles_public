@@ -1,0 +1,554 @@
+# set '-eu' options for shell commands
+# These options are used to have safer shell commands. Option '-e' is used to
+# exit on error and option '-u' is used to give error for unset variables.
+# Option '-f' disables pathname expansion which can be useful when $f, $fs, and
+# $fx variables contain names with '*' or '?' characters. However, this option
+# is used selectively within individual commands as it can be limiting at
+# times.
+set shellopts '-eu'
+
+# set internal field separator (IFS) to "\n" for shell commands
+# This is useful to automatically split file names in $fs and $fx properly
+# since default file separator used in these variables (i.e. 'filesep' option)
+# is newline. You need to consider the values of these options and create your
+# commands accordingly.
+set   ifs "\n"
+
+#--| interpreter for shell commands |--#
+set   shell sh
+
+#--| general |--#
+set   icons           true        # show icons next to files
+set   period          1           # interval to check for directory updates
+set   incsearch       true        # jump to first match after each keystroke in search
+set   incfilter       true        # apply filter after each keystroke
+set   findlen         2           # number of characters prompted for the find command.
+set   info            "size"      # list directory information on the right
+set   dircounts       true        # show number of files in dirs instead of single size
+set   scrolloff       3           # leave some space at the top and the bottom of the screen
+set   autoquit
+set   ratios          1:2:2       # set only one pane in default view
+set   preview                     # previews in default view
+
+#--| previewer |--#
+set previewer ~/.config/lf/lf_kitty_preview
+set cleaner   ~/.config/lf/lf_kitty_clean
+
+
+#--| current directory in title |--#
+cmd   on-cd &{{
+      # '&' commands run silently in background (which is what we want here),
+      # but are not connected to stdout.
+      # To make sure our escape sequence still reaches stdout we pipe it to /dev/tty
+      printf "\033]0;lf: ${PWD/$HOME/~}\007" > /dev/tty
+}}
+on-cd
+
+#--| environment variables |--#
+# f = full path
+# fs = selected files separated with the value of 'filesep', full path
+# fx selected files
+# :  read (default)  builtin/custom command
+# $  shell           shell command
+# %  shell-pipe      shell command running with the ui
+# !  shell-wait      shell command waiting for key press
+# &  shell-async     shell command running asynchronously
+
+#--| open files |--#
+cmd   open ${{
+      case $(file --mime-type "$f" -bL) in
+      text/*|application/json) $EDITOR "$f";;
+      audio/*) mpv --audio-display=no $f ;;
+      video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
+      application/pdf|application/vnd*|application/epub*) setsid -f zathura $fx >/dev/null 2>&1 ;;
+      image/vnd.djvu|application/octet-stream|application/postscript) setsid -f zathura $fx >/dev/null 2>&1 ;;
+      image/*) nohup imv $fx $(fd --no-ignore-vcs -t f -d 1 . ./) > /dev/null 2> /dev/null &;;
+      *) xdg-open "$f" ;;
+      esac
+}}
+
+#--| zoxide |--#
+cmd   z %{{
+      result="$(zoxide query --exclude "${PWD}" -- "$@")"
+      lf -remote "send ${id} cd '${result}'"
+}}
+cmd   zi ${{
+      result="$(zoxide query -i -- "$@")"
+      lf -remote "send ${id} cd '${result}'"
+}}
+
+#--| make directory |--#
+cmd   mkdir ${{
+      printf "Directory Name: "
+      read ans
+      mkdir $ans
+}}
+
+#--| make directory with root privileges |--#
+cmd   sudomkdir ${{
+      printf "Directory Name: "
+      read ans
+      sudo mkdir $ans
+}}
+
+#--| create file |--#
+cmd   mkfile ${{
+      printf "File Name: "
+      read ans
+      $EDITOR $ans
+}}
+
+#--| create file with root privileges |--#
+cmd   sudomkfile ${{
+      printf "File Name: "
+      read ans
+      sudo $EDITOR $ans
+}}
+
+#--| paste & move |--#
+cmd ppaste &{{
+  set -- $(lf -remote load)
+  mode="$1"
+  shift
+  case "$mode" in
+      (copy)
+          rsync -avX --ignore-existing --progress -- "$@" . |
+          stdbuf -i0 -o0 -e0 tr '\r' '\n' |
+          while IFS= read -r line; do
+              lf -remote "send $id echo $line"
+          done
+          ;;
+      (move) mv -n -- "$@" .;;
+  esac
+  lf -remote "send load"
+  lf -remote "send clear"
+}}
+
+#--| change permission | owner | group |--#
+cmd   chmod ${{
+      printf "Mode Bits: "
+      read ans
+      for file in "$fx"
+      do
+        chmod $ans $file
+      done
+      lf -remote 'send reload'
+      lf -remote 'send clear'
+}}
+
+cmd   chown ${{
+      printf "Owner: "
+      read ans
+      for file in "$fx"
+        do
+          chown $ans $file
+        done
+      lf -remote 'send reload'
+      lf -remote 'send clear'
+}}
+
+cmd   chgrp ${{
+      printf "Group: "
+      read ans
+      for file in "$fx"
+        do
+          chgrp $ans $file
+        done
+      lf -remote 'send reload'
+      lf -remote 'send clear'
+}}
+
+#--| fzf select |--#
+cmd   fzf_select $lf -remote "send $id select \"$(fzf --layout reverse)\""
+
+#--| fzf jump |--#
+cmd   fzf_jump ${{
+      res="$(fd . $HOME -H -t d | fzf --reverse --header='Jump to location')"
+      if [ -f "$res" ]; then
+        cmd="select"
+      elif [ -d "$res" ]; then
+      cmd="cd"
+      fi
+      lf -remote "send $id $cmd \"$res\""
+}}
+
+#--| fzf with ripgrep |--#
+cmd   fzf_search ${{
+      res="$( \
+      RG_PREFIX="rg --column --line-number --no-heading --color=always \
+      --smart-case "
+      FZF_DEFAULT_COMMAND="$RG_PREFIX ''" \
+      fzf --bind "change:reload:$RG_PREFIX {q} || true" \
+      --ansi --layout=reverse --header 'Search in files' \
+      | cut -d':' -f1
+      )"
+      [ ! -z "$res" ] && lf -remote "send $id select \"$res\""
+}}
+
+#--| symlink |--#
+cmd symlnk ${{
+    set -f
+    for file in "$fx"
+    do
+        ln -s $file .
+    done
+}}
+
+#--| set wallpaper |--#
+cmd   setwallpaper ${{
+      cp "$f" $XDG_CONFIG_HOME/wall.png &&
+      swaymsg output "*" bg "$XDG_CONFIG_HOME/wall.png" fill
+}}
+
+#--| restore wallpaper |--#
+cmd   restorewallpaper ${{
+      cp $XDG_CONFIG_HOME/sway/wall.png $XDG_CONFIG_HOME/wall.png &&
+      swaymsg output "*" bg "$XDG_CONFIG_HOME/wall.png" fill
+}}
+
+#--| edit lfrc file |--#
+cmd   edit_config :{{
+      $$EDITOR $XDG_CONFIG_HOME/lf/lfrc
+}}
+
+#--| extract the current file with the right command |--#
+cmd   extract ${{
+      set -f
+      case $f in
+        *.tar.bz|*.tar.bz2|*.tbz|*.tbz2) tar xjvf $f;;
+        *.tar.gz|*.tgz) tar xzvf $f;;
+        *.tar.xz|*.txz) tar xJvf $f;;
+        *.tar) tar xvf $f;;
+        *.zip) unzip $f;;
+        *.rar) unrar x $f;;
+        *.7z) 7z x $f;;
+        *.jar) jar -xvf $f;;
+        *) echo "Unsupported format" ;;
+      esac
+}}
+
+#--| gpg encrypt recipient |--#
+cmd   gpg_encrypt_recipient %{{
+      case "$recipient" in
+        "") printf "Cancelled.";;
+        *) gpg --encrypt --sign --recipient "$recipient" $f;;
+      esac
+}}
+
+#--| gpg encrypt symmetric |--#
+cmd   gpg_encrypt_pass ${{
+      gpg --symmetric "$f"
+}}
+
+#--| gpg decrypt |--#
+cmd   gpg_decrypt ${{
+      gpg --output ${f%.gpg} --decrypt "$f"
+}}
+
+#--| gpg sign |--#
+cmd   gpg_sign ${{
+      gpg --sign "$f"
+}}
+
+#--| gpg sign detach |--#
+cmd   gpg_sign_detach ${{
+      gpg --sign --detach-sign "$f"
+}}
+
+#--| gpg clearsign file |--#
+cmd   gpg_sign_clear ${{
+      gpg --clearsign $f
+}}
+
+#--| bulk rename |--#
+cmd   bulk-rename ${{
+      old="$(mktemp)"
+      new="$(mktemp)"
+      if [ -n "$fs" ]; then
+        fs="$(basename -a $fs)"
+      else
+        fs="$(ls)"
+      fi
+        printf '%s\n' "$fs" >"$old"
+        printf '%s\n' "$fs" >"$new"
+        $EDITOR "$new"
+        [ "$(wc -l < "$new")" -ne "$(wc -l < "$old")" ] && exit
+        paste "$old" "$new" | while IFS= read -r names; do
+        src="$(printf '%s' "$names" | cut -f1)"
+        dst="$(printf '%s' "$names" | cut -f2)"
+          if [ "$src" = "$dst" ] || [ -e "$dst" ]; then
+            continue
+          fi
+        mv -- "$src" "$dst"
+        done
+        rm -- "$old" "$new"
+        lf -remote "send $id unselect"
+}}
+
+#--| compress different archives |--#
+cmd   zip ${{
+      set -f
+      mkdir $f-zip
+      cp -r $fx $f-zip
+      (cd $f-zip/ && zip -r $f.zip .)
+      rm -rf $f-zip/
+}}
+
+cmd  targz ${{
+     set -f
+     mkdir $f-tgz
+     cp -r $fx $f-tgz
+     (cd $f-tgz && tar cvzf $f.tar.gz .)
+     rm -rf $f-tgz
+}}
+
+cmd  tarbz2 ${{
+     set -f
+     mkdir $f-tgz
+     cp -r $fx $f-tgz
+     (cd $f-tgz && tar cvjf $f.tar.bz2 .)
+     rm -rf $f-tgz
+}}
+
+#--| yank directory path and copy to clipboard |--#
+cmd   yank-path $printf '%s' "$fx" | wl-copy -n && notify-send -i $XDG_CONFIG_HOME/mako/icons/accessories.png -a lf "File Path" "$fx\nCopied to clipboard"
+
+#--| trash with confirmation |--#
+cmd trash %{{
+  for f in $fx; do
+    printf "Trash $f? [Y/n/a] "
+    read -r ans
+    case "$ans" in
+      Y*|y*) trash "$f"; printf 'Deleted %s.\n' "$f";;
+      A*|a*) trash $fx; printf 'Deleted all files.\n'; break;;
+    esac
+  done
+}}
+
+#--| empty trash with confirmation |--#
+cmd trash_empty %{{
+  printf "Empty trash? [Y/n] "
+  read -r ans
+  case "$ans" in
+    Y*|y*) trash-empty -f; printf "Trash is empty.";;
+    *) printf "Not emptying.";;
+  esac
+}}
+
+cmd   trash_list ${{
+      clear
+      trash-list | less
+}}
+
+cmd   trash_restore ${{
+      clear
+      trash-restore
+}}
+
+cmd   paste %{{
+      load=$(cat ~/.local/share/lf/files)
+      mode=$(echo "$load" | sed -n '1p')
+      list=$(echo "$load" | sed '1d')
+      if [ $mode = 'copy' ]; then
+        cp -a $list .
+      elif [ $mode = 'move' ]; then
+        mv $list .
+        rm ~/.local/share/lf/files
+        lf -remote 'send clear'
+      fi
+}}
+
+#--| pgp functions |--#
+cmd pgp_encrypt_recipient %{{
+  printf "Recipient: "
+  read -r recipient
+  case "$recipient" in
+    "") printf "Cancelled.";;
+    *) gpg --encrypt --sign --recipient "$recipient" $f;;
+  esac
+}}
+
+cmd pgp_encrypt_pass ${{
+  gpg --symmetric $f;
+}}
+
+cmd pgp_decrypt ${{
+  case "$f" in
+    *.gpg) outfile="${f%.gpg}";;
+    *.pgp) outfile="${f%.pgp}";;
+    *) outfile="decrypted-${f}";;
+  esac
+  gpg --output "$outfile" --decrypt "$f"
+}}
+
+#--| encode input into binary or ASCII-armored output with an integrated signature |--#
+cmd pgp_sign ${{
+  gpg --sign $f
+}}
+
+# Wrap input in plaintext signature |--#
+cmd pgp_sign_clear ${{
+  gpg --clearsign $f
+}}
+
+# Create binary or ASCII-armored detached signature from input |--#
+cmd pgp_sign_detach ${{
+  gpg --detach-sign $f
+}}
+
+#--| change layout with preview |--#
+cmd layout_preview ${{
+  lf -remote "send ${id} set ratios 1:2:3"
+  lf -remote "send ${id} set preview"
+}}
+
+#--| change layout with preview |--#
+cmd layout_default ${{
+  lf -remote "send ${id} set nopreview"
+  lf -remote "send ${id} set ratios 1"
+}}
+
+#--| clear selection |--#
+cmd   clear_unselect :{{
+      unselect
+      clear
+}}
+
+#--| unbind keys |--#
+map   m
+map   o
+map   n
+map   "'"
+map   '"'
+map   d
+map   w
+map   c
+map   e
+map   f
+map   r
+map   t
+map   y
+map   u
+
+#--| open files in editor |--#
+map   ee        $$EDITOR  "$f"                                      # open file in $EDITOR
+map   E         $sudo -E $EDITOR "$f"                               # open file in $EDITOR with sudo permission
+map   ec        edit_config                                         # edit lfrc
+map   ea        $$EDITOR  $XDG_CONFIG_HOME/shell/aliases            # edit aliases
+map   eb        $$EDITOR  $HOME/.bashrc                             # edit bashrc
+map   eB        $$EDITOR  $HOME/.bash_profile                       # edit bash_profile
+map   et        $$EDITOR  $XDG_CONFIG_HOME/tmux/tmux.conf           # edit tmux conf
+map   ew        $$EDITOR  $XDG_CONFIG_HOME/wezterm/wezterm.lua      # edit wezterm config
+
+#--|  xdg-open |--#
+map o &xdg-open $f
+map O $xdg-open $f
+
+#--| archives |--#
+map   az        zip                                                 # create zip archive
+map   ag        targz                                               # create tar.gz archive
+map   ab        tarbz2                                              # create tar.bz2 archive
+map   ae        extract                                             # extract archive
+map   *         tag-toggle
+
+#--| trash |--#
+map   dd        trash                                               # send file to trash
+map   dD        delete                                              # regular delete without trash
+map   de        trash_empty                                         # empty the trash
+map   dr        trash_restore                                       # restore file in trash
+map   dl        trash_list                                          # list files in trash
+
+#--| fuzzy search |--#
+map   ff        fzf_select
+map   fj        fzf_jump
+map   fs        fzf_search
+map   fF        find
+map   fz        zi
+
+#--| select |--#
+map   uu        unselect
+map   uc        clear
+map   ui        invert
+
+#--| copy |--#
+map   yy        copy
+map   yp        yank-path
+
+#--| change permission |--#
+map   cm        chmod
+map   co        chown
+map   cg        chgrp
+
+#--| gpg |--#
+map   te        gpg_encrypt_recipient
+map   td        gpg_decrypt
+map   tp        gpg_encrypt_pass
+map   ts        gpg_sign
+map   tsd       gpg_sign_detach
+map   tsc       gpg_sign_clear
+
+#--| general |--#
+map   .         set hidden!
+map   ,         layout_preview
+map   -         layout_default
+map   p         paste
+map   P         ppaste
+map   x         cut
+map   X         !$f
+map   <enter>   open
+map   <delete>  delete
+map   <esc>     clear_unselect
+map   <tab>     jump-next
+map   mf        mkfile
+map   mF        sudomkfile
+map   md        mkdir
+map   mD        sudomkdir
+map   ml        symlnk
+map   N         $ncdu -e -r --exclude-caches --exclude-kernfs --color off -q -r $PWD
+map   K         half-up
+map   J         half-down
+map   H         jump-prev
+map   L         jump-next
+map   R         reload
+map   U         redraw
+map   <c-z>     $kill -STOP $PPID
+
+#--| wallpaper |--#
+map   bg        setwallpaper
+map   br        restorewallpaper
+
+#--| rename |--#
+map   rb        bulk-rename
+map   rr        rename
+map   ra        $lf -remote "send $id push :rename<space>$f"
+map   re        $lf -remote "send $id push :rename<space>$f<a-b><a-d>"
+
+#--| fuzzy cd |--#
+map   zz        z
+map   zi        zi
+
+#--| bookmarks |--#
+map   g?        $lf -doc | $PAGER; clear
+map   gR        cd /
+map   gl        cd ~/.local
+map   ge        cd /etc
+map   gE        cd /usr/local/etc
+map   gM        cd /media
+map   gtt       cd /tmp
+map   gtr       cd ~/.local/share/Trash/files
+map   gB        cd ~/backup
+map   gc        cd ~/.config
+map   gv        cd ~/videos
+map   gb        cd ~/pictures/
+map   gs        cd ~/pictures/screenshots
+map   gw        cd ~/pictures/wallpaper
+map   gd        cd ~/downloads
+map   gp        cd ~/projects
+map   gm        cd ~/music
+map   gn        cd ~/nextcloud
+map   gD        cd ~/.dotfiles
+map   gr        cd ~/repos
+
+#--| commandline |--#
+cmap  <tab>     cmd-menu-complete
+cmap  <backtab> cmd-menu-complete-back

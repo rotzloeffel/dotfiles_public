@@ -1,0 +1,174 @@
+#--| %XDG_CONFIG_HOME/ncmpcpp/config |--#
+
+# vim: ft=cfg
+
+#--| general |--#
+allow_for_physical_item_deletion      = "no"
+autocenter_mode                       = "yes"
+default_place_to_search_in            = "playlist"
+external_editor                       = "$EDITOR"
+ignore_diacritics                     = "yes"
+ignore_leading_the                    = "yes"
+lines_scrolled                        = "1"
+message_delay_time                    = "1"
+mouse_list_scroll_whole_page          = "yes"
+mouse_support                         = "yes"
+use_console_editor                    = "yes"
+cyclic_scrolling                      = "yes"
+
+#--| lyrics |--#
+fetch_lyrics_for_current_song_in_background = "yes"
+follow_now_playing_lyrics             = "yes"
+lyrics_directory                      = "~/.cache/ncmpcpp/lyrics/"
+lyrics_fetchers                       = azlyrics, genius, sing365, metrolyrics, justsomelyrics, jahlyrics, plyrics, tekstowo, internet
+store_lyrics_in_song_dir              = "yes"
+
+#--| connection |--#
+mpd_host                              = "127.0.0.1"
+mpd_port                              = "6600"
+mpd_music_dir                         = "~/music"
+mpd_connection_timeout                = "5"
+mpd_crossfade_time                    = "2"
+connected_message_on_startup          = "no"
+
+#--| now playing |--#
+centered_cursor                       = "yes"
+jump_to_now_playing_song_at_start     = "yes"
+# now_playing_prefix                  = "$b$8➤$7 "
+# now_playing_suffix                  = "  $/b$8"
+# current_item_prefix                 = "$b$7➤$/b$3 "
+# current_item_suffix                 = "  $8"
+
+#--| misc |--#
+display_bitrate                       = "no"
+enable_window_title                   = "yes"
+empty_tag_color                       = "magenta"
+empty_tag_marker                      = ""
+volume_change_step                    = "5"
+space_add_mode                        = "add_remove"
+show_hidden_files_in_local_browser    = "no"
+
+#--| scripts |--#
+execute_on_song_change                = "$XDG_CONFIG_HOME/ncmpcpp/scripts/songinfo"
+
+#--| visualizer |--#
+visualizer_data_source                = "/var/run/user/1000/mpd.fifo"
+visualizer_output_name                = "my_fifo"
+visualizer_type                       = "wave"
+visualizer_in_stereo                  = "no"
+visualizer_color                      = "199,200,201,202,166,130,94,58,22"
+visualizer_autoscale                  = "yes"
+visualizer_fps                        = "60"
+visualizer_spectrum_smooth_look       = "yes"
+visualizer_spectrum_dft_size          = "4"
+visualizer_spectrum_gain              = "20"
+visualizer_spectrum_hz_min            = "20"
+visualizer_spectrum_hz_max            = "20000"
+visualizer_look                       = "●┃"
+#visualizer_look                      = "▒░"
+#visualizer_look                      = "◈░"
+#visualizer_look                      = "┃┃"
+#visualizer_look                      = ●┃
+#visualizer_look                      = "█┇"
+#visualizer_look                      = "▒░"
+#visualizer_look                      = "▋▍"
+#visualizer_look                      = "▋█"
+#visualizer_look                      = "▋█"
+#visualizer_look                      = "▋░"
+#visualizer_look                      = "▋▓"
+#visualizer_look                      = "▋☰"
+#visualizer_look                      = "☰▓"
+
+#--| other |--#
+system_encoding                       = "utf-8"
+regular_expressions                   = "basic"
+
+#--| selected tracks |--#
+discard_colors_if_item_is_selected    = "no"
+
+#--| seeking |--#
+incremental_seeking                   = "yes"
+seek_time                             = "2"
+
+#--| visibility |--#
+header_visibility                     = "no"
+statusbar_visibility                  = "yes"
+titles_visibility                     = "no"
+
+#--| display |--#
+clock_display_seconds                 = "yes"
+display_remaining_time                = "yes"
+display_volume_level                  = "yes"
+search_engine_display_mode            = "columns"
+
+#--| interface |--#
+user_interface                        = "classic"
+
+#--| progress bar |--#
+progressbar_color                     = "black"
+progressbar_elapsed_color             = "blue"
+progressbar_look                      = "─╼─"
+#progressbar_look                     = "▒▓░"
+#progressbar_look                     = "━━╸"
+#progressbar_look                     = "─╼ "
+#progressbar_look                     = "┅┅┄"
+#progressbar_look                     = "##·"
+#progressbar_look                     = "─➞─"
+#progressbar_look                     = "─┅─"
+#progressbar_look                     = "▁▁▁"
+#progressbar_look                     = "≈►·"
+#progressbar_look                     = "→→"
+#progressbar_look                     = "┅┅┄"
+#progressbar_look                     = "─⊙┄"
+#progressbar_look                     = "─➞─"
+#progressbar_look                     = "─┅─"
+#progressbar_look                     = "▪▪▪"
+#progressbar_look                     = "▪▪▫"
+
+###--| browser |--#
+browser_sort_mode                     = name
+browser_sort_format                   = {%l} {%a - }{%t}|{%f}
+browser_display_mode                  = "columns"
+
+#--| header |--#
+header_text_scrolling                 = "no"
+alternative_header_first_line_format  = {{$5$b%t$/b$9}}
+alternative_header_second_line_format = {{$3$b%a$/b$9}{ - $8$b%b$9}}|{%D}
+
+#--| song list |--#
+song_status_format                    = "$7%t"
+song_library_format                   = {{%a - %t} (%b)}|{%f}
+song_window_title_format              = "Now Playing .."
+
+#--| playlist |--#
+ask_before_clearing_playlists         = "yes"
+playlist_disable_highlight_delay      = "2"
+playlist_display_mode                 = "columns"
+playlist_editor_display_mode          = "columns"
+playlist_shorten_total_times          = "yes"
+playlist_show_mpd_host                = "no"
+playlist_show_remaining_time          = "yes"
+
+#--| colors |--#
+active_window_border                  = "blue"
+alternative_ui_separator_color        = "red:b"
+color1                                = "white"
+color2                                = "red"
+colors_enabled                        = "yes"
+header_window_color                   = "black"
+main_window_color                     = "blue"
+player_state_color                    = "black:b"
+state_flags_color                     = "white:b"
+state_line_color                      = "white"
+statusbar_color                       = "default"
+statusbar_time_color                  = "black:b"
+volume_color                          = "black"
+window_border_color                   = "white"
+
+#--| experimental |--#
+now_playing_prefix = "$b$2$7 "
+now_playing_suffix = "  $/b$8"
+current_item_prefix = "$b$7$/b$3 "
+current_item_suffix = "  $8"
+song_columns_list_format = "(50)[]{t|fr:Title} (0)[blue]{a}"
+song_list_format = " {%t $R   $8%a$8}|{%f $R   $8%l$8} $8"

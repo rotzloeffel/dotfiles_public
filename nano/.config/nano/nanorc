@@ -1,0 +1,24 @@
+#--| options |--#
+set autoindent
+set guidestripe 80
+set linenumbers
+set noconvert
+set softwrap
+set tabsize 4
+set tabstospaces
+set constantshow
+set cutfromcursor
+set historylog
+set positionlog
+set smarthome
+set trimblanks
+set backup
+set backupdir ~/backup/nano/
+
+#--| colors |--#
+set functioncolor white
+set keycolor blue
+set numbercolor blue
+set statuscolor blue
+set stripecolor ,black
+set titlecolor black,blue

@@ -1,0 +1,212 @@
+	{
+		"position": "top",
+    "height": 32,
+		"layer": "bottom",
+		"margin-top": 0,
+		"margin-bottom": 0,
+		"margin-right": 0,
+		"margin-left": 0,
+		"modules-center": [
+			"sway/workspaces"
+		],
+		"modules-left": [
+      "custom/crypto",
+			"custom/separator",
+			"battery",
+			"memory",
+			"cpu",
+			"custom/separator",
+			"idle_inhibitor",
+			"sway/mode"
+		],
+		"modules-right": [
+			"clock",
+			"custom/separator",
+			"backlight",
+			"pulseaudio",
+			"custom/separator",
+			"tray",
+			"custom/separator",
+			"custom/powermenu"
+		],
+		"sway/workspaces": {
+			"disable-scroll": true,
+			"all-outputs": false,
+			"format": "{name} {icon}",
+			"format-icons": {
+            "1:web":    "",
+            "2:term":   "",
+            "3:code":   "󰨞",
+            "4:notes":  "",
+            "5:mail":   "󰇮",
+            "6:news":   "",
+            "7:music":  "",
+            "8:chat":   "",
+            "9:vm":     "",
+            "10:any":   "",
+            "urgent":   "",
+            "focused":  "",
+            "default":  ""
+        }
+    },
+
+        "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+        "activated": "",
+        "deactivated": ""
+        }
+    },
+
+    // Brightness module
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": ["","","","", "", "", ""],
+        "on-scroll-up": "light -A 10",
+        "on-scroll-down": "light -U 10",
+        "smooth-scrolling-threshold": 5,
+    },
+
+    // Clock modules
+    "clock": {
+        "timezone": "Europe/Berlin",
+        "interval": 60,
+        "format-alt": " {:%A, %d %B %Y}",
+        "format": " {:%H:%M}",
+        "tooltip": "true",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    },
+
+    // Crypto module
+    "custom/crypto": {
+        "format": "{}",
+        "tooltip": false,
+        "interval": 60,
+        "return-type": "json",
+        "exec": "~/.config/waybar/modules/crypto/waybar_crypto.py",
+        "on-click": "firefox https://www.coingecko.com"
+    },
+
+		"pulseaudio": {
+			"format": "{icon} {volume}%  {format_source}",
+			"format-bluetooth": "{icon} {volume}%  {format_source}",
+			"format-bluetooth-muted": " {icon}  {format_source}",
+			"format-muted": " {format_source}",
+			"format-source": " {volume}%",
+			"format-source-muted": "",
+			"format-icons": {
+				"headphone": "",
+				"hands-free": "",
+				"headset": "",
+				"phone": "",
+				"portable": "",
+				"car": "",
+				"default": [
+					"",
+					"",
+					""
+				]
+			},
+			"on-click": "pavucontrol"
+		},
+
+		"memory": {
+			"states": {
+				"good": 0,
+				"warning": 60,
+				"critical": 80
+			},
+			"interval": 3,
+      "format": " {}%",
+		},
+
+		"cpu": {
+			"states": {
+				"good": 0,
+				"warning": 70,
+				"critical": 95
+			},
+        "format": "{usage:2}%",
+        "tooltip": true,
+        "on-click": "wezterm start --class floating.top btop",
+		   	"interval": 3,
+		},
+
+    // Battery module
+    "battery": {
+        "states": {
+				    "good": 100,
+            "warning": 15,
+            "critical": 5
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": "  {capacity}%",
+        "format-full": " {capacity}%",
+        "format-icons": ["", "", "", "", "", "", "", "", "", ""],
+			  "tooltip": true,
+        "tooltip-format": "{time}"
+    },
+
+		"disk#1": {
+			"states": {
+				"good": 0,
+				"warning": 70,
+				"critical": 95
+			},
+			"interval": 5,
+      "format": "",
+			"path": "/"
+		},
+
+		"sway/mode": {
+			"format": "{}"
+		},
+
+		"wlr/taskbar": {
+			"all-outputs": false,
+			"format": "{icon} {title:.15}",
+			"icon-theme": "Tela-circle-blue-dark",
+			"icon-size": 14,
+			"on-click": "activate",
+			"on-middle-click": "close",
+			"on-right-click": "minimize"
+		},
+
+		"tray": {
+			"icon-size": 18,
+			"spacing": 6,
+      "reverse-direction": true
+		},
+
+		"custom/separator": {
+			"format": "|",
+			"tooltip": false
+		},
+
+		"custom/weather": {
+			"format": "{}",
+			"exec": "~/.config/waybar/modules/weather.sh",
+			"interval": 3600
+		},
+
+		"custom/separator": {
+			"format": "|",
+			"tooltip": false
+		},
+
+    // Power module
+    "custom/powermenu": {
+			"format": "",
+  		"tooltip": false,
+  		"on-click": "exec ~/.config/rofi/modules/rofi-power"
+  	},
+
+		"custom/spotify": {
+			"interval": 1,
+			"return-type": "json",
+			"exec": "~/.config/waybar/modules/spotify.sh",
+			"exec-if": "pgrep spotify",
+			"escape": true
+		},
+	}

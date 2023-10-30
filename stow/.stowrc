@@ -1,0 +1,8 @@
+--target=/home/$USER
+--dir=/home/$USER/.dotfiles
+--ignore='\.gitmodules'
+--ignore='\.gitignore'
+--ignore='\.git'
+--ignore='README'
+--ignore='LICENSE'
+--ignore='COPYING'

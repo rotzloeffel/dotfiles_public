@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+
+while true; do
+	case $1 in
+		--help|-h)   showhelp=1; shift ;;
+		--rofi)      mode="rofi"; shift ;;
+		--mirror)    shift; mirrornum="$1"; shift ;;
+		--no-view)   view=0; shift ;;
+		--to-kindle) tokindle=1; view=0; shift ;;
+		--to-usb)    tousb=1; view=0; shift ;;
+		*) 		     query="$*"; break ;;
+	esac
+done
+
+[ -z "$query" ] && showhelp=1
+
+BLACK=$'\e[0;30m'
+RED=$'\e[0;31m'
+GREEN=$'\e[0;32m'
+YELLOW=$'\e[0;33m'
+BLUE=$'\e[0;34m'
+PURPLE=$'\e[0;35m'
+CYAN=$'\e[0;36m'
+WHITE=$'\e[0;37m'
+OFF=$'\e[0m'
+
+if [ $showhelp ]; then
+	echo "Usage: libby [--rofi] [--mirror <num>] [--no-view] [--to-kindle] <query>"
+	echo "  --rofi: use rofi to select a book (default is fzf)"
+	echo "  --mirror <num>: use an alternative libgen mirror (default: 3)"
+	echo "  --no-view: don't view the result"
+	echo "  --to-kindle: convert file to .mobi and send to \$KINDLE_EMAIL via mutt/neomutt (implies --no-view)"
+	echo "  --to-usb: copy file to root of \$USB via rsync (implies --no-view)"
+	echo -e "  <query>: the query to search for\n"
+	exit 1
+fi
+
+[ -z "$LIBBY_OUTPUT_DIR" ] && LIBBY_OUTPUT_DIR="$HOME/buecher"
+mkdir -p "$LIBBY_OUTPUT_DIR"
+[ -z "$LIBBY_VIEWER" ] && LIBBY_VIEWER="xdg-open"
+[ -z "$mode" ] && mode="fzf"
+[ -z "$mirrornum" ] && mirrornum=3
+[ -z "$view" ] && view=1
+[ -z "$tokindle" ] && tokindle=0
+[ -z "$tousb" ] && tousb=0
+
+download() {
+	echo "fetching data..."
+	data=$(curl -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.15.5 Chrome/87.0.4280.144 Safari/537.36" -Ls "https://libgen.gs/index.php?req=$(echo "$query" | jq -sRr @uri)&columns%5B%5D=t&columns%5B%5D=a&columns%5B%5D=s&columns%5B%5D=y&columns%5B%5D=i&objects%5B%5D=f&topics%5B%5D=l&topics%5B%5D=f&res=25")
+
+	# get array of book info with pup using the table rows (tr elements), it's the 2nd to last table
+	bookdata=$(echo $data | pup 'table:nth-last-of-type(1)')
+
+	trr=1 # first row is the header
+	skipped=0 # number of skipped books due to extension exclusion
+
+	# continue until no more tr elements
+	while true; do
+		if [ $trr -eq 1 ]; then
+			bookTitle=$(echo "$bookdata" | pup "tr:nth-of-type($trr) td:nth-of-type(1) text{}" | grep -v "^\s*$" | awk '{$1=$1};1' | tail -n +8 | head -2 | xargs)
+		else
+			bookTitle=$(echo "$bookdata" | pup "tr:nth-of-type($trr) td:nth-of-type(1) text{}" | grep -v "^\s*$" | awk '{$1=$1};1' | head -2 | xargs)
+		fi
+
+		if [ -z "$bookTitle" ]; then
+			break # exit if no title
+		fi
+
+		bookAuthor=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(2) text{}" | sed -n 2p | xargs)
+		bookPublisher=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(3) text{}" | xargs)
+		bookYear=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(4) text{}" | xargs)
+		bookLanguage=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(5) text{}" | xargs)
+		bookSize=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(7) text{}" | xargs)
+		bookFiletype=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(8) text{}" | xargs)
+
+		if ! echo $bookFiletype | grep -q "\(epub\|pdf\)"; then
+			skipped=$((skipped+1))
+			trr=$((trr+1))
+			continue
+		fi
+
+		bookMirror=$(echo $bookdata | pup "tr:nth-of-type($trr) td:nth-of-type(9) a:nth-of-type($mirrornum) attr{href}" | xargs)
+
+		echo ";0;$((trr-skipped));1;$bookTitle;2;$bookAuthor;3;$bookPublisher;4;$bookYear;5;$bookSize;6;$bookFiletype;7;$bookMirror;8;"
+		trr=$((trr+1))
+	done > /tmp/libgen.txt
+
+	# if file is empty, exit
+	if [ ! -s /tmp/libgen.txt ]; then
+		echo "No results found for '$query'"
+		return 1
+	fi
+
+	# exclude mirror
+	if [ "$mode" = "rofi" ]; then
+		line=$(cat /tmp/libgen.txt | sed 's/;0;//g' | sed 's/;1;/: /' | sed 's/;2;/ - /' | sed 's/;3;/ (/' | sed 's/;4;/, /' | sed 's/;5;/, /' | sed 's/;6;/) [/' | sed 's/;7;.*/]/' | sed 's/[0-9][0-9][0-9][0-9][0-9][0-9]\+ \?,\?\;\?//g' | awk '{$1=$1};1' | recode -q html..ascii | rofi -i -hover-select -me-select-entry '' -me-accept-entry MousePrimary -dmenu -p "Select book: " -hover-select -theme-str '* { font: "monospace 12"; width: 80%; }' -l 26 | cut -d':' -f1 | sed 's/;1;.*//g' | sed 's/;0;//g')
+	else
+		line=$(cat /tmp/libgen.txt | sed "s/;0;/$OFF/g" | sed "s/;1;/: $GREEN/g" | sed "s/;2;/ $OFF-/" | sed "s/;3;/ $OFF($BLUE/" | sed "s/;4;/$OFF, /" | sed "s/;5;/, $YELLOW/" | sed "s/, , //g" | sed "s/;6;/$OFF) [$RED/" | sed "s/;7;.*/$OFF]/" | sed 's/[0-9][0-9][0-9][0-9][0-9][0-9]\+ \?,\?\;\?//g' | awk '{$1=$1};1' | recode -q html..ascii | fzf --ansi | cut -d':' -f1 | sed 's/;1;.*//g' | sed 's/;0;//g')
+	fi
+
+	[ -z "$line" ] && return 1
+
+	title=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;1;//' | sed 's/;2;.*//g' | sed 's/[0-9][0-9][0-9][0-9][0-9][0-9]\+ \?,\?\;\?//g' | awk '{$1=$1};1' | sed 's/ 1$//g;s/ X$//g;s/ b$//g' | recode -q html..ascii)
+	author=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;2;//' | sed 's/;3;.*//g')
+	publisher=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;3;//' | sed 's/;4;.*//g')
+	year=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;4;//' | sed 's/;5;.*//g')
+	size=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;5;//' | sed 's/;6;.*//g')
+	filetype=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;6;//' | sed 's/;7;.*//g')
+	mirror=$(cat /tmp/libgen.txt | sed -n "$line"p | sed 's/.*;7;//' | sed 's/;8;.*//g')
+
+	rm /tmp/libgen.txt # clean up
+
+	[ -z "$mirror" ] && echo "no mirror found" && return 1
+	echo "fetching mirror..."
+	mirror=$(curl -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.15.5 Chrome/87.0.4280.144 Safari/537.36" -Ls $mirror | pup "#download a attr{href}" | head -1)
+	[ -z "$mirror" ] && echo "failed to retrieve mirror" && return 1
+
+	# download from mirror and save to ~/books
+	title=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | tr -cd '[:alnum:]._-' | sed 's/-\+/-/g' | sed 's/-x$//' | sed 's/-$//g' | sed 's/^-//g')
+	echo "downloading $title.$filetype to $LIBBY_OUTPUT_DIR"
+	\wget -c -O - "$mirror" > "$LIBBY_OUTPUT_DIR/$title.$filetype"
+	echo $mirror
+
+	if [ $tokindle = 1 ]; then
+		ebook-convert "$LIBBY_OUTPUT_DIR/$title.$filetype" "/tmp/$title.mobi"
+		echo "" | neomutt -s "wow" -a "/tmp/$title.mobi" -- $KINDLE_EMAIL
+	fi
+
+	if [ $tousb = 1 ]; then
+		if ! rsync -tEravhp --progress "$LIBBY_OUTPUT_DIR/$title.$filetype" "$USB/$title.$filetype"; then
+			echo "Waiting for USB..."
+			sleep 1
+			while ! rsync -tEravhp --progress "$LIBBY_OUTPUT_DIR/$title.$filetype" "$USB/$title.$filetype"; do
+				sleep 1
+			done
+		fi
+		sync
+	fi
+
+	if [ $view = 1 ]; then
+		$LIBBY_VIEWER "$LIBBY_OUTPUT_DIR/$title.$filetype"
+	fi
+
+}
+
+download "$query"

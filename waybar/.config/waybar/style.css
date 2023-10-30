@@ -1,0 +1,153 @@
+/* gruvbox dark */
+@define-color background  #1d2021;
+@define-color text        #ebdbb2;
+@define-color good        #ebdbb2;
+@define-color warn        #fabd2f;
+@define-color crit        #cc241d;
+@define-color accent      #fbf1c7;
+@define-color hilight     #ffffff;
+@define-color separator   #665c54;
+
+@define-color color0      #665c54;
+@define-color color8      #7c6f64;
+@define-color color1      #cc241d;
+@define-color color9      #fb4934;
+@define-color color2      #98971a;
+@define-color color10     #b8bb26;
+@define-color color3      #d79921;
+@define-color color11     #fabd2f;
+@define-color color4      #458588;
+@define-color color12     #83a598;
+@define-color color5      #b16286;
+@define-color color13     #d3869b;
+@define-color color6      #689d6a;
+@define-color color14     #8ec07c;
+@define-color color7      #a89984;
+@define-color color15     #bdae93;
+
+
+* {
+	font-size:   14px;
+  font-family: JetBrains Mono, Symbols Nerd Font, cryptocoins;
+}
+
+window#waybar {
+	color: @color0;
+	text-shadow: 1px 1px 1px black;
+	background: @background;
+	background-color: rgba(29, 32, 33, 0.99);
+	border-radius: 4px;
+}
+
+window#waybar.top {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+window#waybar.bottom {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+tooltip {
+     border-radius: 6px;
+     border: 1px solid @separator;
+	   background: @background;
+     color: @color4;
+}
+
+tooltip label {
+	color: @color12;
+}
+
+/* Base styling for modules */
+#workspaces,
+#mode,
+#idle_inhibitor,
+#pulseaudio,
+#memory,
+#cpu,
+#clock,
+#battery,
+#backlight,
+#disk,
+#taskbar,
+#custom-swap,
+#custom-separator,
+#custom-powermenu,
+#tray {
+	padding: 2px 10px 0px 10px;
+	color: @color0;
+}
+
+#custom-separator {
+	color: @separator;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+#workspaces {
+	padding: 0px;
+}
+
+#workspaces button {
+	color: @color4;
+	margin: 0;
+	padding: 0px 13px 0px 13px;
+	border-radius: 0px;
+	font-weight: bold;
+}
+
+#workspaces button.focused {
+	color: @color6;
+}
+
+#mode {
+    background-color: transparent;
+    color: @text;
+    margin: 0px 4px;
+}
+
+#battery.good,
+#cpu.good,
+#disk.1.good,
+#memory.good {
+	color: @color0;
+}
+
+#battery.warning,
+#cpu.warning,
+#disk.1.warning,
+#memory.warning {
+	background: @background;
+	color: @warn;
+}
+
+#battery.critical,
+#cpu.critical,
+#disk.1.critical,
+#memory.critical {
+	background: @background;
+	color: @crit;
+}
+
+#custom-crypto {
+	padding: 6px;
+	margin-left: 10px;
+}
+#custom-powermenu {
+	color: @color0;
+	padding-top: 1px;
+	margin-right: 3px;
+}
+#clock {
+	margin-left: 3px;
+}
+
+#idle_inhibitor.activated {
+    color: @text;
+}

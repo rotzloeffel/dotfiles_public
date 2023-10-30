@@ -1,0 +1,65 @@
+# --> gruvbox dark
+thm_bg="#1d2021"
+thm_fg="#ebdbb2"
+thm_cyan="#89dceb"
+thm_black="#1d2021"
+thm_gray="#313244"
+thm_magenta="#8ec07c"
+thm_lavender="#458588"
+thm_pink="#f5c2e7"
+thm_red="#cc241d"
+thm_green="#b8bb26"
+thm_yellow="#fabd2f"
+thm_blue="#458588"
+thm_orange="#689d6a"
+thm_black4="#665c54"
+thm_mocha_mantle="#181825"
+
+mode_separator=""
+session_icon=" "
+right_arrow_icon=''
+left_arrow_icon=''
+upload_speed_icon=' '
+download_speed_icon=' '
+user_icon=''         #     
+time_icon=' '
+date_icon=' '
+host_icon='歷'
+left_win_sep=""
+right_win_sep=""
+set -g @mode_indicator_prefix_prompt " WAIT #[default]#[fg=$thm_green]$mode_separator"
+set -g @mode_indicator_prefix_mode_style bg=$thm_green,fg=$thm_black,bold
+set -g @mode_indicator_copy_prompt " COPY #[default]#[fg=$thm_yellow]$mode_separator"
+set -g @mode_indicator_copy_mode_style bg=$thm_yellow,fg=$thm_black,bold
+set -g @mode_indicator_sync_prompt " SYNC #[default]#[fg=$thm_red]$mode_separator"
+set -g @mode_indicator_sync_mode_style bg=$thm_red,fg=$thm_black,bold
+set -g @mode_indicator_empty_prompt " TMUX #[default]#[fg=$thm_lavender]$mode_separator"
+set -g @mode_indicator_empty_mode_style bg=$thm_lavender,fg=$thm_black,bold
+set -g @online_icon "#[fg=$thm_green]●#[$bg]"
+set -g @offline_icon "#[fg=$thm_red]●#[$bg]"
+set -g status on
+set -g status-justify centre
+set -g status-position bottom
+set -g @suspend_suspended_options ""
+set -g @suspend_on_resume_command "tmux \
+  set-option -uq '@mode_indicator_custom_prompt' \\; \
+  set-option -uq '@mode_indicator_custom_mode_style'"
+set -g @suspend_on_suspend_command "tmux \
+  set-option -q '@mode_indicator_custom_prompt' ' NEST #[default]#[fg=$thm_red]$mode_separator' \\; \
+  set-option -q '@mode_indicator_custom_mode_style' 'bg=$thm_red,fg=$thm_black'"
+set -g @suspend_suspended_options "window-status-current-format:gw:#[fg=$thm_red]${left_win_sep}#[bg=$thm_red\\,fg=$thm_black] #I #W #F #[fg=$thm_red\\,bg=$thm_black]${right_win_sep}#[fg=$thm_black]"
+set -g status-left-length 90
+set -g mode-style "fg=$thm_black,bg=$thm_magenta"
+set -g status-right-length 90
+set -g status-style "bg=$thm_black"
+set -g window-style ""
+set -g window-active-style ""
+set -g message-style bg=$thm_blue,fg=$thm_bg
+set -g pane-border-style fg=$thm_magenta
+set -g pane-active-border-style fg=$thm_magenta
+setw -g window-status-separator ""
+set -g status-left "#{tmux_mode_indicator}   #[fg=$thm_black4,bold]$session_icon #[fg=$thm_orange]#S "
+set -g status-right "#[fg=$thm_black4,bold] $user_icon #[fg=$thm_orange]#(/usr/bin/whoami)#[fg=$thm_black4] $host_icon#[fg=$thm_orange]#h | #[fg=$thm_black4] #[fg=$thm_orange]%R "
+# set -g status-right "#[fg=$thm_black4,bold] $user_icon #[fg=$thm_orange]#(/usr/bin/whoami)#[fg=$thm_black4] $host_icon#[fg=$thm_orange]#h | #[fg=$thm_black4] #[fg=$thm_orange]%R #{online_status} "
+setw -g window-status-format "#[fg=$thm_blue,nobold,nounderscore,noitalics]#[fg=$thm_black4] #I #W #F #[fg=$grey11,nobold,nounderscore,noitalics]"
+setw -g window-status-current-format "#[fg=$thm_blue,bold,nounderscore,noitalics]${left_win_sep}#[bg=$thm_blue,fg=$thm_black,bold] #I #W #F #[fg=$thm_lavender,bg=$thm_black,nobold,nounderscore,noitalics]${right_win_sep}#[fg=$thm_blue,bg=$thm_black,nobold,nounderscore,noitalics]"

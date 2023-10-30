@@ -1,0 +1,70 @@
+#--| $XDG_CONFIG_HOME/ripgrep/ripgrerc |--#
+
+# limit maximum columns to prevent ripgrep to vomit really long lines,
+# but show a preview for such cases instead.
+--max-columns=150
+--max-columns-preview
+
+# this is similar to `--ignore-case`, but disables itself if the pattern contains any uppercase letters.
+--smart-case
+
+# don't respect ignore files (.gitignore, .ignore, etc.).
+--no-ignore
+
+# search hidden files
+--hidden
+
+# follow symbolic links while recursively searching.
+--follow
+
+# add file types
+--type-add
+infra:*.{tf,hcl,yml,yaml}*
+
+# limit search depth for directories.
+--max-depth=8
+
+# files/folders to ignore
+--glob=!**/galaxy/roles/
+--glob=!**/node_modules/
+--glob=!.cache/
+--glob=!mail/
+--glob=!.vscode-oss/
+--glob=!.bash_history
+--glob=!.dir_colors
+--glob=!.gnupg/
+--glob=!.pki/
+--glob=!.node_repl_history
+--glob=!.vagrant.d/
+--glob=!.git/
+--glob=!Joplin/
+--glob=!backup/
+--glob=!downloads/
+--glob=!Backup/
+--glob=!vimwiki/
+--glob=!Code\ -\ OSS/
+--glob=!.w3m/
+--glob=!.dbus/
+--glob=!.themes/
+--glob=!.npm/
+--glob=!.vim/
+--glob=!.viminfo
+--glob=!.icons/
+--glob=!.dotfiles/
+--glob=!.thunderbird/
+--glob=!.mozilla/
+--glob=!.ssh/
+--glob=!.local/
+--glob=!Library/
+--glob=!repos/
+--glob=!build
+--glob=!VirtualBox\ VMs/
+--glob=!coverage/
+--glob=!dist/
+--glob=!log/
+--glob=!public/
+--glob=!tmp/
+--glob=!vendor/
+--glob=!{.git,.svn,node_modules,tealdeer,Trash,vendor}/
+--glob=!*.{lock,cache}/
+--glob=!{package-lock.json}/

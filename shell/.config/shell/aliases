@@ -1,0 +1,376 @@
+#--| $XDG_CONFIG_HOME/shell/aliases |--#
+
+#--| remove aliases |--#
+unalias -a
+
+#--| detect os |--#
+OS=$( compgen -G "/etc/*release" > /dev/null  && grep '^NAME' /etc/*release | sed 's/NAME=//g;s/"//g' )
+
+#--| fedora |--#
+if [ "$OS" == "Fedora" ]; then
+    alias dnf="sudo dnf"
+fi
+
+#--| debian |--#
+if [ "$OS" == "Debian GNU/Linux" ] || [ "$OS" == "Ubuntu" ]; then
+    alias apt-cache="sudo apt-cache"
+    alias apt-get="sudo apt-get"
+    alias apt="sudo apt"
+    alias apt-file="sudo apt-file"
+    alias dpkg-reconfigure="sudo dpkg-reconfigure"
+    alias dpkg="sudo dpkg"
+    command -v fdfind > /dev/null && alias fd='fdfind'
+fi
+
+#--| void |--#
+if [ "$OS" == "Void" ]; then
+    alias xbps-install="sudo xbps-install"
+    alias vpm="sudo vpm"
+    alias vpsm="sudo vpsm"
+    alias vsv="sudo vsv"
+fi
+
+#--| verbosity |--#
+alias mount="mount -v"
+alias chgrp="chgrp -v --preserve-root"
+alias chmod="chmod -v --preserve-root"
+alias chown="chown -v --preserve-root"
+alias mkdir="mkdir -pv"
+alias rsync='rsync --archive --verbose --ipv4 --progress --human-readable --stats --update'
+alias free="free -hltw"
+alias stow="stow -vv"
+alias mv="mv -iv"
+alias cp="cp -iv"
+alias ln="ln -iv"
+alias df='df -h'
+alias du='du -h'
+alias dd="dd status=progress"
+
+#--| colors |--#
+alias fgrep="fgrep --color=auto"
+alias grep="grep --color=auto"
+alias diff="diff --color=auto"
+alias ip="ip -color=auto"
+
+#--| sudo |--#
+alias sudo="sudo "
+alias systemctl="sudo systemctl"
+alias poweroff="sudo poweroff"
+alias reboot="sudo reboot"
+alias tcpdump="sudo tcpdump"
+alias pcinfo="sudo -E inxi -v6 -c5"
+alias ports="sudo lsof -i -P -n | grep LISTEN | fzf"
+
+#--| general |--#
+alias h='history | fzf'
+alias md="mkdir"
+alias hc='herbstclient'
+alias lf="lfcd"
+alias v="$EDITOR"
+alias vi="$EDITOR"
+alias vim="$EDITOR"
+alias emacs="emacsclient -c -a 'emacs'"
+alias x="exit"
+alias q="exit"
+alias cert="openssl req -new -x509 -nodes -out cert.pem -keyout cert.key -days 365"
+alias htpasswd='openssl passwd -apr1'
+alias pyhttpd='python -m http.server --directory .'
+alias ncdu="ncdu --color dark -r -e"
+alias neofetch="clear && neofetch"
+alias open="setsid xdg-open"
+alias path="echo $PATH | tr -s ':' '\n'"
+alias pscpu='ps -r -aceo user,group,pid,ppid,comm,%mem,%cpu,state,tty| head'
+alias pubkey="more ~/.ssh/id_ed25519.pub | wl-copy | echo '=> Public key copied to pasteboard.'"
+alias reset="reset && source $HOME/.bash_profile"
+alias rg="rg --hidden --smart-case"
+alias srm='safedelete'
+alias su="su -"
+# alias sway="dbus-run-session sway 1>/tmp/"$(date +%d-%m-%Y)"_sway.log 2>/tmp/"$(date +%d-%m-%Y)"_sway_error.log"
+alias sway="sway 1>/tmp/sway.log_"$(date +%d-%m-%Y)" 2>/tmp/sway_error.log_"$(date +%d-%m-%Y)""
+alias tree='tree -a -L 2 -I downloads/ -I nextcloud/ -I .cache -I books -I videos -I repos -I .npm -I music -I pictures -I .mozilla'
+alias utc='env TZ=UTC date'
+alias w3m='w3m -o confirm_qq=false'
+alias wget="wget --hsts-file="$XDG_CACHE_HOME/wget-hsts""
+alias checkemoji="curl https://unicode.org/Public/emoji/13.0/emoji-test.txt | less"
+alias checkencoding="ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1"
+alias checkutf8="curl https://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-demo.txt | less"
+alias checkvirus="clamscan --recursive=yes --infected /home"
+alias ipv4="dig @resolver4.opendns.com myip.opendns.com +short -4"
+alias ipv6="dig @resolver1.ipv6-sandbox.opendns.com AAAA myip.opendns.com +short -6"
+
+#--| gpg |--#
+alias gpge="gpg -a --export BF126BD864503445332579548765530E7396FB32 | tee my_pubkey.gpg"
+alias gpgl="gpg --list-signatures"
+alias gpgll="gpg --keyid-format 0xlong -K --fingerprint"
+alias gpgls="gpg --keyid-format 0xshort -K --fingerprint"
+alias gpgr="gpg-connect-agent reloadagent /bye"
+
+#--| tmux |--#
+[ -f "$XDG_CONFIG_HOME"/tmux/tmux.conf ] && alias tmux='tmux -f ~/.config/tmux/tmux.conf'
+alias t='tmux attach || tmux new-session'
+alias tks="tmux kill-session -t"
+alias tcl="\rm ~/.config/tmux/resurrect/* >/dev/null 2>&1"
+alias tls='tmux list-sessions'
+alias tmc='tmux split -h lf -command "set nopreview" -command "set ratios 1";lf -command "set nopreview" -command "set ratios 1"'
+alias tns='tmux new-session -d'
+
+#--| docker |--#
+alias d="docker"
+alias dnets="docker network ls -q | xargs docker inspect | jq '.[] | select(.Name != \"host\" and .Name != \"none\") | [.] | map(.Name + \"\t\" + (.IPAM.Config | map(.Subnet) | join(\"\t\")))[]' -r | sort -V -k2,3 | column -t"
+alias dps="docker ps --format='table {{.ID}}\t{{.Image}}\t{{.Label \"org.label-schema.version\"}}\t{{.Networks}}\t{{.RunningFor}}\t{{.Status}}\t{{.Names}}' | sed '1s/version/VERSION/'"
+alias dpsa="docker ps -a --format='table {{.ID}}\t{{.Image}}\t{{.Label \"org.label-schema.version\"}}\t{{.Networks}}\t{{.RunningFor}}\t{{.Status}}\t{{.Names}}' | sed '1s/version/VERSION/'"
+
+#--| ansible |--#
+alias ap="ansible-playbook"
+alias al="ansible-lint"
+
+#--| vpn |--#
+alias vpnstatus="curl https://am.i.mullvad.net/connected"
+
+#--| crypto |--#
+alias crypto="curl rate.sx"
+alias btc="curl rate.sx/btc"
+alias eth="curl rate.sx/eth"
+alias ltc="curl rate.sx/ltc"
+
+#--| ascii |--#
+alias 2048='ssh play@ascii.town'
+alias ascii="toilet -t -f rebel"
+alias busy="cat /dev/urandom | hexdump -C | grep '1a cc'"
+alias chess="telnet freechess.org"
+alias clip2qr="wl-paste | qrencode -t ANSI"
+alias corona="curl https://corona-stats.online/de"
+alias dance="nc rya.nc 1987"
+alias forrest="curl ascii.live/forrest"
+alias happy="toilet -f term -w 200 -t --gay"
+alias joke="curl https://icanhazdadjoke.com"
+alias lenny="echo '( ͡° ͜ʖ ͡°)' | tee wl-copy"
+alias lofi='mpv --no-video https://youtu.be/jfKfPfyJRdk'
+alias lol="base64 </dev/urandom | lolcat"
+alias man-ascii="man 4 console_codes"
+alias mapscii="telnet mapscii.me"
+alias metal="toilet -f term -w 200 -t --metal"
+alias netris="ssh netris.rocketnine.space"
+alias nyancat="mpv --no-terminal --no-video --loop ytdl://QH2-TGUlwu4 & telnet rainbowcat.acc.umu.se; kill %%"
+alias parrot="curl parrot.live"
+alias race="curl node-web-console.glitch.me"
+alias ricebowl="curl -L rum.sh/ricebowl"
+alias rr="curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash"
+alias shrug="echo '¯\_(ツ)_/¯' | tee wl-copy"
+alias starwars="telnet towel.blinkenlights.nl"
+alias tetris="autoload -Uz tetriscurses && tetriscurses"
+alias tictactoe="telnet pixelomer.com"
+alias toiletlist='for i in ${TOILET_FONT_PATH:=/usr/share/figlet}/*.{t,f}lf; do j=${i##*/}; echo ""; echo "╓───── "$j; echo "╙────────────────────────────────────── ─ ─ "; echo ""; toilet -d "${i%/*}" -f "$j" "${j%.*}"; done'
+alias tron="ssh sshtron.zachlatta.com"
+alias tty-clock='tty-clock -c -C 4 -r -s -n'
+
+#--| header |--#
+alias headr='echo "\
+#--|  |--#"'
+
+alias headr1='echo "\
+#  ▓▓▓▓▓▓▓▓▓▓
+# ░▓ author ▓
+# ░▓   code ▓
+# ░▓▓▓▓▓▓▓▓▓▓
+# ░░░░░░░░░░"'
+
+alias headr2='echo "\
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║                                                                            ║
+# ╚════════════════════════════════════════════════════════════════════════════╝"'
+
+alias headr3='echo "\
+# -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ --
+# -- ━━━━━━━━━━━━━━━━━━━❰             ❱━━━━━━━━━━━━━━━━━━━ --
+# -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ --"'
+
+alias headr4='echo "\
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ --
+-- ───────────────────────────────────────────────── --
+--
+--
+-- ───────────────────────────────────────────────── --
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ --"'
+
+alias headr5='echo "-- ━━━━━━━━━━━━━━━━━❰                  ❱━━━━━━━━━━━━━━━━━ --"'
+
+alias headr6='echo "\
+# ==============================================================
+# |                                                            |
+# =============================================================="'
+
+#--| cd |--#
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+#--| bookmarks |--#
+alias gc="cd  $HOME/.config"
+alias gD="cd  $HOME/.dotfiles"
+alias gl="cd  $HOME/.local"
+alias glb="cd $HOME/.local/bin"
+alias gls="cd $HOME/.local/share"
+alias glf="cd $HOME/.local/share/fonts"
+alias gB="cd  $HOME/backup"
+alias gb="cd  $HOME/pictures"
+alias gS="cd  $HOME/pictures/screenshots"
+alias gw="cd  $HOME/pictures/wallpaper"
+alias gd="cd  $HOME/downloads"
+alias gm="cd  $HOME/music"
+alias gn="cd  $HOME/nextcloud"
+alias gp="cd  $HOME/projects"
+alias gr="cd  $HOME/repos"
+alias gv="cd  $HOME/videos"
+alias gy="cd  $HOME/videos/youtube"
+alias gf="cd  $HOME/videos/movies"
+
+#--| edit files |--#
+alias cw="$EDITOR $XDG_CONFIG_HOME/wezterm/wezterm.lua"
+alias ca="$EDITOR $XDG_CONFIG_HOME/shell/aliases"
+alias sa="source  $XDG_CONFIG_HOME/shell/aliases && echo '== aliases reloaded =='"
+alias cf="$EDITOR $XDG_CONFIG_HOME/shell/functions"
+alias sf="source  $XDG_CONFIG_HOME/shell/functions && echo '== functions reloaded =='"
+alias cb="$EDITOR $HOME/.bashrc"
+alias sb="source  $HOME/.bashrc && echo '== bashrc reloaded =='"
+alias cB="$EDITOR $HOME/.bash_profile"
+alias sB="source  $HOME/.bash_profile && echo '== bash_profile reloaded =='"
+
+#--| ls |--#
+alias ls='ls -h -F --color=always'
+alias ll='ls -l'
+alias l='ls'
+alias la='ls -a'
+alias lla='ls -al'
+alias l.='ls -d .* 2>/dev/null'
+alias lt='find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/" '
+alias ltr='ls -altr'
+alias lsbl='cd > /dev/null ;fd --hidden --follow --type=l'
+
+#--| exa |--#
+EXA_DIR_PREVIEW="exa \
+  --color=always -T \
+  --level=3 \
+  --icons \
+"
+
+if [[ "$TTY" != /dev/tty*[0-9]* ]]; then
+    command -v exa > /dev/null   && \
+        alias exa='exa --classify --icons --color=always --group-directories-first' && \
+        alias l='ls'             && \
+        alias ls='exa  -g'       && \
+        alias la='exa  -ag'      && \
+        alias ll='exa  -lg'      && \
+        alias lla='exa -alg'     && \
+        alias l.='exa  -d .*'    && \
+        alias lsd='exa -Dalg'    && \
+        alias ltr='exa -alg -s modified'    && \
+        alias lt='exa  -aTg'
+        export FZF_ALT_C_OPTS="--preview=\"$EXA_DIR_PREVIEW {}\""
+    else
+    command -v exa > /dev/null   && \
+        alias exa='exa --classify --color=always --group-directories-first' && \
+        alias l='ls'             && \
+        alias ls='exa  -g'       && \
+        alias la='exa  -ag'      && \
+        alias ll='exa  -lg'      && \
+        alias lla='exa -alg'     && \
+        alias l.='exa  -d .*'    && \
+        alias lsd='exa -Dalg'    && \
+        alias ltr='exa -alg -s modified'    && \
+        alias lt='exa -Td -L 2'
+        export FZF_ALT_C_OPTS="--preview=\"$EXA_DIR_PREVIEW {}\""
+fi
+
+#--| editor |--#
+if [[ "$(command -v nvim)" ]]; then
+    alias  vv="nvim -u NORC"
+fi
+
+#--| duf |--#
+if [[ "$(command -v duf)" ]]; then
+    alias df='duf'
+fi
+
+#--| fdfind |--#
+if [[ "$(command -v fd)" ]]; then
+    export FZF_ALT_C_COMMAND="fd --type directory --hidden --follow --ignore-file ~/.config/git/ignore"
+    alias fd='fd --hidden --follow'
+fi
+
+if [[ "$(command -v fdfind)" ]]; then
+    export FZF_ALT_C_COMMAND="fdfind --type directory --hidden --follow --ignore-file ~/.config/git/ignore"
+    alias fd='fdfind --hidden --follow'
+fi
+
+#--| imv-wayland |--#
+if [[ "$(command -v imv-wayland)" ]]; then
+    alias imv="imv-wayland"
+fi
+
+#--| bat |--#
+command -v bat > /dev/null && \
+    alias cat="bat -p" && \
+    alias less="bat -p" && \
+    export BAT_THEME="gruvbox-dark"
+
+#--| top |--#
+command -v htop > /dev/null && \
+    alias top='htop'
+command -v btop > /dev/null && \
+    alias top='btop'
+
+#--| neomutt |--#
+command -v neomutt > /dev/null && \
+    alias mutt='neomutt'
+
+
+#--| fzf |--#
+if [[ "$TTY" != /dev/ttyv[0-9]* ]]; then
+    if [ -x "$(command -v rg)" ]; then
+      export FZF_CTRL_T_COMMAND='rg --files --no-ignore --no-messages --follow --hidden --glob "!.git/*" '
+      export FZF_CTRL_T_OPTS="--preview-window=right --preview 'bat --style=numbers --color=always --line-range :100 {}'"
+      export FZF_DEFAULT_COMMAND='rg --files --no-ignore --follow --hidden --glob "!.git/*" 2> /dev/null'
+      export FZF_CTRL_R_OPTS="-e --preview-window=:hidden"
+    fi
+      export FZF_DEFAULT_OPTS="
+        -e --bind 'alt-j:down,alt-k:up,enter:accept'
+        --layout=reverse
+        --history=$XDG_CACHE_HOME/fzf_history
+        --history-size=10000
+        --info=inline
+        --height=80%
+        --multi
+        --border
+        --no-info
+        --preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
+        --prompt='  ' --pointer='> ' --marker='* '
+        --bind ',:toggle-preview'
+        --bind 'ctrl-a:select-all'
+        --bind 'ctrl-y:execute-silent(echo {+} | wl-copy -n)'
+        --bind 'ctrl-e:execute(echo {+} | xargs -o $EDITOR)'
+        --bind 'ctrl-v:execute(code {+})'
+        --color fg:#665c54,bg:-1,hl:#fabd2f,fg+:#458588,bg+:-1,hl+:#458588
+        --color info:#83a598,prompt:#458588,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#665c54"
+      export FZF_CTRL_R_OPTS="-e --preview-window=:hidden"
+fi
+
+#--| zoxide |--#
+if [[ "$(command -v zoxide)" ]]; then
+    export _ZO_FZF_OPTS="
+      --no-sort
+      --keep-right
+      --info=inline
+      --layout=reverse
+      --exit-0
+      --select-1
+      --bind=ctrl-z:ignore
+      --preview-window=right
+      --border
+      --color fg:#665c54,bg:-1,hl:#fabd2f,fg+:#458588,bg+:-1,hl+:#458588
+      --color info:#83a598,prompt:#458588,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#665c54
+      --prompt='  ' --pointer='> ' --marker='* '
+      --preview=\"$EXA_DIR_PREVIEW {2..} \"
+      "
+fi

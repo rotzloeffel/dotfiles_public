@@ -1,0 +1,92 @@
+#--| keys |--#
+unbind-key  j
+unbind-key  k
+bind-key    ENTER          open-in-browser
+bind-key    G              end
+bind-key    J              next articlelist
+bind-key    K              prev articlelist
+bind-key    N              prev-unread
+bind-key    O              open-all-unread-in-browser feedlist
+bind-key    R              reload
+bind-key    SPACE          macro-prefix
+bind-key    U              show-urls
+bind-key    [              prev-feed articlelist
+bind-key    ]              next-feed articlelist
+bind-key    ^D             pagedown
+bind-key    ^U             pageup
+bind-key    a              toggle-article-read
+bind-key    g              home
+bind-key    h              quit
+bind-key    j              down
+bind-key    k              up
+bind-key    l              open
+bind-key    n              next-unread
+bind-key    o              open-all-unread-in-browser-and-mark-read feedlist
+bind-key    r              reload-all
+bind-key    s              toggle-show-read-feeds
+bind-key    x              pb-delete
+
+#--| notification |--#
+notify-always              no
+notify-format              "%d new article (%n unread article, %f unread feeds)"
+notify-program             notify-send
+notify-xterm               yes
+
+#--| ignores |--#
+ignore-article             "*" "title =~ \"Sponsor\""
+ignore-article             "*" "title =~ \"Sponsored\""
+
+#--| format |--#
+articlelist-format         "   %D %?T?  %-20T   ?%t"
+datetime-format            "%e.%b"
+download-full-page         yes
+download-retries           4
+external-url-viewer        "urlscan"
+feedlist-format            "%11u    Artikel    %t"
+html-renderer              "w3m -o confirm_qq=false -T text/html"
+pager                      internal
+player                     "mpv"
+
+#--| appearance |--#
+always-display-description yes
+article-sort-order         date-asc
+auto-reload                yes
+cleanup-on-quit            yes
+confirm-exit               yes
+goto-first-unread          yes
+goto-next-feed             no
+max-browser-tabs           1
+max-items                  125
+prepopulate-query-feeds    yes
+refresh-on-startup         yes
+reload-threads             30
+reload-time                60
+scrolloff                  5
+show-keymap-hint           no
+show-read-articles         yes
+show-read-feeds            no
+show-title-bar             no
+swap-title-and-hints       no
+text-width                 100
+
+#--| locations |--#
+browser                    "setsid -f qutebrowser %u >/dev/null 2>&1"
+cache-file                 ~/.cache/newsboat_cache.db
+error-log                  ~/.cache/newsboat_error.log
+save-path                  ~/nextcloud/Dokumente/rss_artikel
+
+#--| macro key by default is "," |--#
+macro b set browser "setsid -f qutebrowser %u >/dev/null 2>&1"; open-in-browser ; set browser "%browser"
+macro d set browser "setsid -f youtube-dl %u"; open-in-browser ; set browser "%browser"
+macro f set browser "setsid -f firefox %u"; open-in-browser ; set browser "%browser"
+macro i set browser "setsid -f wget -O- %u 2>/dev/null | imv -" ; open-in-browser ; set browser "%browser"
+macro r set browser "readable %u 2>/dev/null | w3m -o confirm_qq=false -T text/html" ; open-in-browser ; set browser "%browser"
+macro t set browser "tmux split-window && tmux send-keys 'w3m %u && tmux kill-pane\n'"; open-in-browser ; set browser "%browser"
+macro u set browser "setsid -f echo %u | wl-copy -n" ; open-in-browser ; set browser "%browser"
+macro w set browser "w3m -o confirm_qq=false %u"; open-in-browser ; set browser "%browser"
+macro y set browser "setsid -f mpv %u"; open-in-browser ; set browser "%browser"
+
+#--| themes |--#
+include ~/.config/newsboat/themes/gruvbox-dark.conf
+
+# vim: tw=90 sts=-1 sw=3 et ft=conf

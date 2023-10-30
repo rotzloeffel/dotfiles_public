@@ -1,0 +1,112 @@
+* {
+    background:     #282828FF;
+    background-alt: #1D2021FF;
+    foreground:     #EBDBB2FF;
+    selected:       #B8BB26FF;
+    active:         #83A598FF;
+    urgent:         #FB4934FF;
+    normal:         #928374FF;
+    color4:         #458588FF;
+
+    width: 600;
+    font: "JetBrains Mono 10";
+}
+
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+window {
+    height: 360px;
+    border: 1px;
+    border-radius: 10px;
+    border-color: @color4;
+    background-color: @background-alt;
+}
+
+mainbox {
+    background-color: @background-alt;
+}
+
+inputbar {
+    children: [prompt,entry];
+    background-color: @background-alt;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+prompt {
+    background-color: @color4;
+    padding: 6px;
+    text-color: @background-alt;
+    border-radius: 3px;
+    margin: 20px 0px 0px 20px;
+}
+
+textbox-prompt-colon {
+    expand: false;
+    str: ":";
+}
+
+entry {
+    padding: 6px;
+    margin: 20px 0px 0px 10px;
+    text-color: @normal;
+    background-color: @background;
+}
+
+listview {
+    border: 0px 0px 0px;
+    padding: 6px 0px 0px;
+    margin: 10px 0px 0px 20px;
+    columns: 2;
+    lines: 5;
+    background-color: @background-alt;
+}
+
+element {
+    padding: 5px;
+    background-color: @background-alt;
+    text-color: @normal;
+}
+
+element-icon {
+    size: 25px;
+}
+
+element selected {
+    background-color:  @normal;
+    text-color: @background-alt;
+}
+
+mode-switcher {
+    spacing: 0;
+  }
+
+button {
+    padding: 7px;
+    background-color: @background;
+    text-color: @normal;
+    vertical-align: 0.5;
+    horizontal-align: 0.5;
+}
+
+button selected {
+  background-color: @color4;
+  text-color: @background-alt;
+}
+
+message {
+    background-color: @background-alt;
+    margin: 2px;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+textbox {
+    padding: 6px;
+    margin: 20px 0px 0px 20px;
+    text-color: @normal;
+    background-color: @background-alt;
+}

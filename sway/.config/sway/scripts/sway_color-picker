@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# dependencies: grim slurp wl-clipboard
+color=$(grim -g "$(slurp -p -b 00000000)" - | convert - txt:- | awk 'END{print $3}')
+wl-copy "$color"
+notify-send "Color copied to clipboard" "$color" -i $XDG_CONFIG_HOME/mako/icons/color-picker.png

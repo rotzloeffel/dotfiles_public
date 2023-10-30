@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+if [ -z "$@" ]
+then
+  echo "No filename given."
+  echo "Usage: `basename $0` filename(s) [filename(s)]..."
+else
+  iconv -f 437 -t UTF8 "$@" | less
+fi
+
+exit 0

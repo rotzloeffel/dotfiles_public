@@ -1,0 +1,111 @@
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ General                                                                    ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+[user]
+
+[github]
+
+[core]
+    pager           = diff-so-fancy | less --tabs=4 -RFX
+    editor          = nvim
+    fileMode        = true
+    ignoreCase      = false
+    symlinks        = true
+    compression     = 9
+    excludesFile    = ~/.config/git/ignore
+    attributesFile  = ~/.config/git/attributes
+    hooksPath       = ~/.config/git/hooks
+
+[grep]
+    lineNumber      = true
+    patternType     = extended
+
+[http]
+    cookiefile      = ~/.config/git/gitcookies
+
+[merge]
+    stat            = true
+
+[format]
+    signOff         = yes
+
+[web]
+    browser         = firefox
+
+[gpg]
+    program         = gpg
+    format          = openpgp
+
+[push]
+    gpgSign         = if-asked
+    default         = current
+    autoSetupRemote = true
+    followTags      = yes
+
+[commit]
+#   gpgsign         = true
+    verbose         = true
+
+[fetch]
+    prune           = true
+    parallel        = 3
+
+[submodule]
+    fetchJobs       = 3
+
+[status]
+    showUntrackedFiles = all
+
+[interactive]
+    diffFilter      = diff-so-fancy --patch
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Colors                                                                     ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+[color]
+    ui              = true
+
+[color "branch"]
+    current         = yellow
+    local           = blue
+    remote          = yellow
+    upstream        = magenta
+    plain           = cyan
+
+[color "diff"]
+    meta            = blue
+    frag            = magenta
+    old             = red
+    new             = green
+    whitespace      = magenta
+
+[color "status"]
+    added           = cyan
+    changed         = yellow
+    untracked       = red
+
+[credential]
+    helper          = libsecret
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Merging & Diffing                                                          ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+[merge]
+    conflictstyle   = diff3
+
+[mergetool]
+    prompt          = true
+
+[diff]
+    colorMoved      = default
+
+[difftool]
+    prompt          = false
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Aliases                                                                    ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+[alias]
