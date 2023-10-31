@@ -9,17 +9,6 @@ lsp.set_preferences({
   manage_nvim_cmp = true, -- set to false if you want to configure nvim-cmp on your own
 })
 
-lsp.nvim_workspace()
-
--- make sure this servers are installed
--- see :help lsp-zero.ensure_installed()
-lsp.ensure_installed({
-  -- 'rust_analyzer',
-  -- 'tsserver',
-  -- 'eslint',
-  -- 'sumneko_lua',
-})
-
 -- don't initialize this language server
 -- we will use rust-tools to setup rust_analyzer
 -- lsp.skip_server_setup({'sumneko_lua'})

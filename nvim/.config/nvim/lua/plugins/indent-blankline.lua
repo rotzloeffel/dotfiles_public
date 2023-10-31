@@ -53,7 +53,7 @@ vim.g.indent_blankline_context_patterns = {
 -- HACK: work-around for https://github.com/lukas-reineke/indent-blankline.nvim/issues/59
 vim.wo.colorcolumn = "99999"
 
-require("indent_blankline").setup { }
+require("ibl").setup { }
 
 -- local colors = require("catppuccin.palettes").get_palette()
 -- require("catppuccin.lib.highlighter").syntax({

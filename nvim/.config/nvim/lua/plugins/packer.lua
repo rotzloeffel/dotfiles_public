@@ -94,7 +94,7 @@ return require('packer').startup(function(use)
   use { 'gbprod/yanky.nvim' }
 
   -- Telescope fuzzy finder
-  use { 'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = { {'nvim-lua/plenary.nvim'} } }
+  use { 'nvim-telescope/telescope.nvim', tag = '0.1.3', requires = { {'nvim-lua/plenary.nvim'} } }
   use { 'jvgrootveld/telescope-zoxide', requires = {'nvim-telescope/telescope.nvim' } }
   use { 'debugloop/telescope-undo.nvim', requires = {'nvim-telescope/telescope.nvim' } }
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
