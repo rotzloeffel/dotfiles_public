@@ -63,7 +63,7 @@ fi
 
 # mpd
 [ -d "$XDG_CACHE_HOME/mpd/playlists/" ] || \mkdir -p $XDG_CACHE_HOME/mpd/playlists/
-[ -d "/var/run/user/1000/mpd/" ] || \mkdir -p /var/run/user/1000/mpd/
+[ -d "/var/run/user/$(id -u)/mpd/" ] || \mkdir -p /var/run/user/$(id -u)/mpd/
 
 #--| path |--#
 
